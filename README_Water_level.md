@@ -1,20 +1,25 @@
-# ESP32 Water Level Sensor using MicroPython (10-bit ADC)
+# ESP32 with Water Level Sensor using MicroPython
 
 ## Overview
 
-This project reads water level data from an analog water level sensor connected to an ESP32 board using MicroPython. The ADC is configured for 10-bit resolution (0–1023), making the readings more compact and suitable for basic level detection.
+This project demonstrates how to read water level values from a water level sensor connected to an ESP32 board using MicroPython. The readings are printed on the serial console via Thonny IDE.
 
 ## GitHub Repository
 
-- GitHub Repo: [Python_in_ESP32](https://github.com/AbisheckD/Python_in_ESP32/tree/main)
+- [GitHub Repository](https://github.com/AbisheckD/Python_in_ESP32/tree/main)
 
 ## Prerequisites
 
-- ESP32 Devkit Board  
-- Analog Water Level Sensor  
-- MicroPython flashed to ESP32  
-- USB to UART bridge driver ([Silicon Labs CP210x VCP](https://www.silabs.com/developer-tools/usb-to-uart-bridge-vcp-drivers))  
-- [Thonny IDE](https://thonny.org/) for uploading and running code
+- ESP32 Development Board  
+- Water Level Sensor  
+- Python installed on your computer
+
+  ## Useful Links
+
+- 🔧 **MicroPython Firmware for ESP32**: [Download](https://micropython.org/download/ESP32_GENERIC/)
+- 🧪 **Getting Started Tutorial with Thonny**: [TechToTinker Guide](https://techtotinker.com/2020/09/05/000-esp32-micropython-how-to-get-started-with-micropython/)
+- 🛠 **Thonny IDE**: [https://thonny.org](https://thonny.org)
+- 🔌 **USB Driver (CP210x)**: [Download VCP Driver](https://www.silabs.com/developer-tools/usb-to-uart-bridge-vcp-drivers)
 
 ## Wiring
 
@@ -25,44 +30,56 @@ This project reads water level data from an analog water level sensor connected 
 | Analog Output  | GPIO36 (ADC1_CH0) |
 
 > ⚠️ Use an ADC-capable pin. GPIO36 is commonly used and stable for analog reads.
+## Flashing MicroPython to ESP32 (Command Prompt Steps)
 
-## Useful Links
+1. **Install esptool**  
+   ```bash
+   pip install esptool
+   ```
 
-- 🔧 **MicroPython Firmware for ESP32**: [Download](https://micropython.org/download/ESP32_GENERIC/)
-- 🧪 **Getting Started Tutorial with Thonny**: [TechToTinker Guide](https://techtotinker.com/2020/09/05/000-esp32-micropython-how-to-get-started-with-micropython/)
-- 🛠 **Thonny IDE**: [https://thonny.org](https://thonny.org)
-- 🔌 **USB Driver (CP210x)**: [Download VCP Driver](https://www.silabs.com/developer-tools/usb-to-uart-bridge-vcp-drivers)
+2. **Erase the flash**  
+   Replace `COM3` with your ESP32's actual COM port:
+   ```bash
+   python -m esptool --port COM3 erase_flash
+   ```
 
-## Instructions
+3. **Write the MicroPython firmware**  
+   Replace the path with the actual location of your `.bin` file:
+   ```bash
+   python -m esptool --chip esp32 --port COM3 --baud 460800 write_flash -z 0x1000 "D:\Desktop_tools\micropython\esp_micropy\ESP32_GENERIC-20250415-v1.25.0.bin"
+   ```
 
-1. Flash MicroPython firmware on the ESP32 board if not already done.
-2. Open Thonny IDE and set the interpreter to **MicroPython (ESP32)**.
-3. Connect the sensor as per the wiring guide above.
-4. Copy and upload the code below to your ESP32 as `main.py`.
+## Setting Up Thonny IDE
 
-## Code
+1. Open Thonny.
+2. Go to `Tools` > `Options` > `Interpreter`.
+3. Select **MicroPython (ESP32)** and choose the correct COM port.
+4. Click OK to save.
+
+## Water Level Sensor Code (MicroPython)
 
 ```python
 from machine import ADC, Pin
 from time import sleep
 
 adc = ADC(Pin(36))  # GPIO36 (ADC1_CH0)
-adc.atten(ADC.ATTN_11DB)  # 0-3.3V range
-adc.width(ADC.WIDTH_10BIT)  # 10-bit resolution: 0–1023
+adc.atten(ADC.ATTN_11DB)  # Full range: 0-3.3V
+adc.width(ADC.WIDTH_10BIT)
 
 while True:
-    level = adc.read()  # Returns a value between 0 and 1023
+    level = adc.read()  # Returns a value between 0 and 1023 (10-bit)
     print("Water Level Reading:", level)
     sleep(1)
 ```
 
-## Output Sample
+## Output
+
+The terminal in Thonny will display the following:
 
 ```
-Water Level Reading: 428
-Water Level Reading: 493
-Water Level Reading: 515
-...
+Water Level Reading: 1024
+Water Level Reading: 1500
+Water Level Reading: 3000
 ```
 
 ## Calibration Tip
@@ -71,11 +88,9 @@ If needed, you can map the 0–1023 range to real-world water level (in cm or %)
 
 ## License
 
-This project is under the MIT License.
+MIT License
 
-## Contributing
-
-Contributions are welcome! Clone the repo and submit a pull request.
+## Clone the Repo
 
 ```bash
 git clone https://github.com/AbisheckD/Python_in_ESP32.git
