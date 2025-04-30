@@ -1,84 +1,88 @@
-
-# ESP32 DHT11 Temperature and Humidity Monitor (MicroPython)
+# ESP32 with DHT11 Sensor using MicroPython
 
 ## Overview
 
-This MicroPython script reads temperature and humidity values from a DHT11 sensor connected to an ESP32. The values are printed every 2 seconds. GPIO4 is used as the data pin.
-
-## Features
-
-- Reads data from a DHT11 sensor
-- Displays temperature in °C and humidity in %
-- Error handling included for sensor reading failures
+This project demonstrates how to read temperature and humidity values from a DHT11 sensor connected to an ESP32 board using MicroPython. The readings are printed on the serial console via Thonny IDE.
 
 ## GitHub Repository
 
-- GitHub Repo: [Python_in_ESP32](https://github.com/AbisheckD/Python_in_ESP32/tree/main)
+- [GitHub Repository](https://github.com/AbisheckD/Python_in_ESP32/tree/main)
 
 ## Prerequisites
 
-- ESP32 Devkit board  
-- DHT11 sensor module  
-- MicroPython firmware installed  
-- USB to UART driver installed ([CP210x Driver](https://www.silabs.com/developer-tools/usb-to-uart-bridge-vcp-drivers))  
+- ESP32 Development Board  
+- DHT11 Temperature and Humidity Sensor  
+- MicroPython firmware for ESP32 ([Download here](https://micropython.org/download/ESP32_GENERIC/))  
+- USB to UART driver ([CP210x VCP](https://www.silabs.com/developer-tools/usb-to-uart-bridge-vcp-drivers))  
 - [Thonny IDE](https://thonny.org/)  
+- Python installed on your computer  
 
-## Wiring
+## Flashing MicroPython to ESP32 (Command Prompt Steps)
 
-- DHT11 VCC → 3.3V on ESP32  
-- DHT11 GND → GND on ESP32  
-- DHT11 DATA → GPIO4 on ESP32  
+1. **Install esptool**  
+   ```bash
+   pip install esptool
+   ```
 
-## Resources
+2. **Erase the flash**  
+   Replace `COM3` with your ESP32's actual COM port:  
+   ```bash
+   python -m esptool --port COM3 erase_flash
+   ```
 
-- 📘 **MicroPython Firmware for ESP32:** [Download here](https://micropython.org/download/ESP32_GENERIC/)  
-- 🧑‍🏫 **Getting Started with MicroPython on ESP32 (Thonny):** [techtotinker.com tutorial](https://techtotinker.com/2020/09/05/000-esp32-micropython-how-to-get-started-with-micropython/)  
-- 💻 **Thonny IDE Website:** [https://thonny.org](https://thonny.org)  
-- 🔌 **Driver for USB-to-Serial (ESP32):** [Silicon Labs VCP Driver](https://www.silabs.com/developer-tools/usb-to-uart-bridge-vcp-drivers)
+3. **Write the MicroPython firmware**  
+   Replace the path with the actual location of your `.bin` file:  
+   ```bash
+   python -m esptool --chip esp32 --port COM3 --baud 460800 write_flash -z 0x1000 "D:\Desktop_tools\micropython\esp_micropy\ESP32_GENERIC-20250415-v1.25.0.bin"
+   ```
 
-## How to Run
+## Setting Up Thonny IDE
 
-1. Flash MicroPython firmware to the ESP32 if not done already.
-2. Open [Thonny IDE](https://thonny.org).
-3. Set the interpreter to **MicroPython (ESP32)** via `Tools` → `Options` → `Interpreter`.
-4. Connect the DHT11 sensor to GPIO4.
-5. Paste the following code in Thonny and save it as `main.py` on the device.
+1. Open [Thonny](https://thonny.org/).  
+2. Go to `Tools > Options > Interpreter`.  
+3. Select **MicroPython (ESP32)** and choose the correct COM port.  
+4. Click **OK** to save.
 
-## Code
+## DHT11 Code (MicroPython)
 
 ```python
-import dht
 from machine import Pin
-import time
+import dht
+from time import sleep
 
-sensor = dht.DHT11(Pin(4))  # GPIO4 is connected to DHT11 DATA pin
+sensor = dht.DHT11(Pin(4))  # Connect DHT11 data pin to GPIO4
 
 while True:
     try:
         sensor.measure()
         temp = sensor.temperature()
         hum = sensor.humidity()
-        print("Temperature: {}°C  Humidity: {}%".format(temp, hum))
-    except Exception as e:
-        print("Error reading sensor:", e)
-    time.sleep(2)
+        print("Temperature:", temp, "°C")
+        print("Humidity:", hum, "%")
+    except OSError as e:
+        print("Sensor error:", e)
+    sleep(2)
 ```
 
-## Sample Output
+## Output
 
+The terminal in Thonny will display the following:
 ```
-Temperature: 27°C  Humidity: 55%
-Temperature: 27°C  Humidity: 56%
-...
+Temperature: 26 °C
+Humidity: 55 %
 ```
+
+## Helpful Resources
+
+- 🧑‍🏫 [Getting Started Tutorial (Thonny + ESP32)](https://techtotinker.com/2020/09/05/000-esp32-micropython-how-to-get-started-with-micropython/)
+- 📥 [MicroPython Firmware for ESP32](https://micropython.org/download/ESP32_GENERIC/)
+- 🔌 [CP210x USB Driver](https://www.silabs.com/developer-tools/usb-to-uart-bridge-vcp-drivers)
 
 ## License
 
-This project is open-source and available under the MIT License.
+MIT License
 
-## Contributing
-
-Feel free to fork this repository, contribute with pull requests, or report issues.
+## Clone the Repo
 
 ```bash
 git clone https://github.com/AbisheckD/Python_in_ESP32.git
